@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Circle</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+        }
+        .slider-container {
+            position: absolute;
+            bottom: 20px;
+            width: 80%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        input[type="range"] {
+            width: 300px;
+        }
+        label {
+            color: white;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="animationCanvas"></canvas>
+    <div class="slider-container">
+        <label for="speedSlider">Speed:</label>
+        <input type="range" id="speedSlider" min="8" max="65" step="0.1" value="10">
+    </div>
+    <script>
+        const canvas = document.getElementById("animationCanvas");
+        const ctx = canvas.getContext("2d");
+        const speedSlider = document.getElementById("speedSlider");
+        
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            radius = canvas.height / 3;
+            x = -radius; // Start just outside the left side of the screen
+        }
+        
+        let x;
+        let radius;
+        let speed = parseFloat(speedSlider.value);
+        let lastTimestamp = performance.now();
+        
+        resizeCanvas();
+        
+        window.addEventListener("resize", resizeCanvas);
+        
+        function animate(timestamp) {
+            const deltaTime = (timestamp - lastTimestamp) / 1000; // Convert to seconds
+            lastTimestamp = timestamp;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(x, canvas.height / 2, radius, 0, Math.PI * 2);
+            ctx.fillStyle = "white";
+            ctx.fill();
+            ctx.closePath();
+            
+            x += canvas.width * speed * deltaTime / 10;
+            
+            if (x > canvas.width + radius) {
+                x = -radius; // Wrap to the left side
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        speedSlider.addEventListener("input", () => {
+            speed = parseFloat(speedSlider.value);
+        });
+        
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
+
